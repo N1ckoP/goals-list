@@ -1,4 +1,4 @@
-package com.goalslist.persistence;
+package com.goalslist.storage;
 
 import com.goalslist.GoalsListConfig;
 import com.goalslist.goals.Goal;

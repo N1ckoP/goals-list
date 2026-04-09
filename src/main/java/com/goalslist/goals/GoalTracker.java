@@ -1,7 +1,7 @@
 package com.goalslist.goals;
 
 import com.goalslist.events.GoalCompletedNotifier;
-import com.goalslist.persistence.GoalRepository;
+import com.goalslist.storage.GoalRepository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

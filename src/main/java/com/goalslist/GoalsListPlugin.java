@@ -4,7 +4,7 @@ import com.google.inject.Provides;
 import com.goalslist.events.GoalCompletedNotifier;
 import com.goalslist.goals.GoalEvaluator;
 import com.goalslist.goals.GoalTracker;
-import com.goalslist.persistence.GoalRepository;
+import com.goalslist.storage.GoalRepository;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
