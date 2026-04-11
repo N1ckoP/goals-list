@@ -29,9 +29,6 @@ public class AddGoalPanel extends JPanel
 		add(new GoalInput(plugin, draftGoal, "Goal")
 		{
 
-		}.onSubmit(task ->
-		{
-			log.info("Submitted goal: {}", task); //STEP 6 instead of log , store it somewhere so we dont lose it.
-		}), constraints);
+		}.onSubmit(plugin::addGoalBridge), constraints);
 	}
 }

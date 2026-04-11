@@ -1,5 +1,6 @@
 package com.goalslist;
 
+import com.goalslist.goals.Goal;
 import com.google.inject.Provides;
 import com.goalslist.events.GoalCompletedNotifier;
 import com.goalslist.goals.GoalEvaluator;
@@ -39,6 +40,8 @@ public class GoalsListPlugin extends Plugin
 
 	@Inject
 	private GoalsListConfig config;
+	@Inject
+	private ConfigManager configManager;
 
 	@Inject
 	private ClientToolbar clientToolbar;
@@ -52,7 +55,7 @@ public class GoalsListPlugin extends Plugin
 	{
 		goalTracker = new GoalTracker(
 			new GoalEvaluator(),
-			new GoalRepository(config),
+			new GoalRepository(config,configManager),
 			new GoalCompletedNotifier(client, config)
 		);
 		goalsListPanel = new GoalsListPanel(this);
@@ -133,5 +136,10 @@ public class GoalsListPlugin extends Plugin
 		graphics.drawLine(7, 13, 11, 9);
 		graphics.dispose();
 		return image;
+	}
+	public void addGoalBridge(Goal goal)
+	{
+		goalTracker.addGoal(goal);
+		goalsListPanel.refreshGoals(goalTracker.getGoals());
 	}
 }

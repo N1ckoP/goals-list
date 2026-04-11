@@ -12,5 +12,5 @@ public class GoalRowPanel extends JPanel
 		setLayout(new BorderLayout());
 		add(new JLabel(goal.getTitle()), BorderLayout.WEST);
 		add(new JLabel(goal.getCurrentValue() + " / " + goal.getTargetValue()), BorderLayout.EAST);
-	}
+	} // UI FOR GOALS ADDED need to work on / WORK ON DELETE BUTTON?
 }

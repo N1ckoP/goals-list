@@ -69,4 +69,10 @@ public class GoalTracker
 	{
 		goals.clear();
 	}
+
+	public void addGoal(Goal goal)
+	{
+		goals.add(goal);
+		goalRepository.saveGoals(goals);
+	}
 }
