@@ -72,4 +72,18 @@ public class Goal
 	{
 		this.status = Objects.requireNonNull(status, "status");
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Goal{" +
+			"id='" + id + '\'' +
+			", title='" + title + '\'' +
+			", type=" + type +
+			", targetKey='" + targetKey + '\'' +
+			", targetValue=" + targetValue +
+			", currentValue=" + currentValue +
+			", status=" + status +
+			'}';
+	}
 }

@@ -5,7 +5,14 @@ import com.goalslist.events.GoalCompletedNotifier;
 import com.goalslist.goals.GoalEvaluator;
 import com.goalslist.goals.GoalTracker;
 import com.goalslist.storage.GoalRepository;
+import com.goalslist.ui.GoalsListPanel;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import javax.inject.Inject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -16,6 +23,8 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.ClientToolbar;
+import net.runelite.client.ui.NavigationButton;
 
 @Slf4j
 @PluginDescriptor(
@@ -25,12 +34,18 @@ import net.runelite.client.plugins.PluginDescriptor;
 public class GoalsListPlugin extends Plugin
 {
 	@Inject
+	@Getter
 	private Client client;
 
 	@Inject
 	private GoalsListConfig config;
 
+	@Inject
+	private ClientToolbar clientToolbar;
+
 	private GoalTracker goalTracker;
+	private GoalsListPanel goalsListPanel;
+	private NavigationButton navigationButton;
 
 	@Override
 	protected void startUp()
@@ -40,17 +55,34 @@ public class GoalsListPlugin extends Plugin
 			new GoalRepository(config),
 			new GoalCompletedNotifier(client, config)
 		);
+		goalsListPanel = new GoalsListPanel(this);
 		goalTracker.loadGoals();
+		goalsListPanel.refreshGoals(goalTracker.getGoals());
+
+		navigationButton = NavigationButton.builder()
+			.tooltip("Goals List")
+			.icon(createNavigationIcon())
+			.priority(5)
+			.panel(goalsListPanel)
+			.build();
+		clientToolbar.addNavigation(navigationButton);
 		log.debug("Goals List started");
 	}
 
 	@Override
 	protected void shutDown()
 	{
+		if (navigationButton != null)
+		{
+			clientToolbar.removeNavigation(navigationButton);
+			navigationButton = null;
+		}
+
 		if (goalTracker != null)
 		{
 			goalTracker.clear();
 		}
+		goalsListPanel.refreshGoals(goalTracker == null ? java.util.List.of() : goalTracker.getGoals());
 
 		log.debug("Goals List stopped");
 	}
@@ -61,6 +93,7 @@ public class GoalsListPlugin extends Plugin
 		if (gameStateChanged.getGameState() == GameState.LOGGED_IN && goalTracker != null)
 		{
 			goalTracker.loadGoals();
+			goalsListPanel.refreshGoals(goalTracker.getGoals());
 			log.debug("Reloaded goal definitions after login");
 		}
 	}
@@ -75,11 +108,30 @@ public class GoalsListPlugin extends Plugin
 
 		Skill skill = statChanged.getSkill();
 		goalTracker.updateSkillGoals(skill, client.getRealSkillLevel(skill));
+		goalsListPanel.refreshGoals(goalTracker.getGoals());
 	}
 
 	@Provides
 	GoalsListConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(GoalsListConfig.class);
+	}
+
+	private BufferedImage createNavigationIcon()
+	{
+		BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics = image.createGraphics();
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		graphics.setColor(new Color(0xF39C12));
+		graphics.fillRoundRect(1, 1, 14, 14, 4, 4);
+		graphics.setColor(new Color(0x2B2B2B));
+		graphics.fillRect(4, 4, 8, 1);
+		graphics.fillRect(4, 7, 5, 1);
+		graphics.setColor(Color.WHITE);
+		graphics.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		graphics.drawLine(5, 11, 7, 13);
+		graphics.drawLine(7, 13, 11, 9);
+		graphics.dispose();
+		return image;
 	}
 }
