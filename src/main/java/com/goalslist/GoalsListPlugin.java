@@ -142,4 +142,9 @@ public class GoalsListPlugin extends Plugin
 		goalTracker.addGoal(goal);
 		goalsListPanel.refreshGoals(goalTracker.getGoals());
 	}
+	public void  removeGoalBridge(Goal goal)
+	{
+		goalTracker.removeGoal(goal);
+		goalsListPanel.refreshGoals(goalTracker.getGoals());
+	}
 }

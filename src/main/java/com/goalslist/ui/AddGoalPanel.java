@@ -4,6 +4,8 @@ import com.goalslist.GoalsListPlugin;
 import com.goalslist.goals.Goal;
 import com.goalslist.goals.GoalType;
 import com.goalslist.ui.inputs.GoalInput;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.JPanel;
@@ -17,6 +19,7 @@ public class AddGoalPanel extends JPanel
 	{
 		super(new GridBagLayout());
 		setBackground(ColorScheme.DARK_GRAY_COLOR);
+		setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
@@ -30,5 +33,8 @@ public class AddGoalPanel extends JPanel
 		{
 
 		}.onSubmit(plugin::addGoalBridge), constraints);
+
+		Dimension preferredSize = getPreferredSize();
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, preferredSize.height));
 	}
 }

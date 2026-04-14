@@ -75,4 +75,9 @@ public class GoalTracker
 		goals.add(goal);
 		goalRepository.saveGoals(goals);
 	}
+	public void removeGoal(Goal goal)
+	{
+		goals.remove(goal);
+		goalRepository.saveGoals(goals);
+	}
 }

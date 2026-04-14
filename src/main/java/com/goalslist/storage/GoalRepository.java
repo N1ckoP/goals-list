@@ -43,6 +43,7 @@ public class GoalRepository
 		}
 		catch (RuntimeException ex)
 		{
+			configManager.setConfiguration("goalslist", "goalsData", "");
 			return new ArrayList<>();
 		}
 	}

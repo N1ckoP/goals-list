@@ -68,7 +68,13 @@ public abstract class GoalInput extends JPanel
     protected void submit()
     {
         String skill = (String) skillDropdown.getSelectedItem();
-        int levelInput = Integer.parseInt(targetValueField.getText());
+        String levelText = targetValueField.getText().trim();
+        if (levelText.isEmpty())
+        {
+            return;
+        }
+
+        int levelInput = Integer.parseInt(levelText);
         int currentLevel = plugin.getClient().getRealSkillLevel(Skill.valueOf(skill));
         GoalStatus status = GoalStatus.ACTIVE;
         if(levelInput <= currentLevel) {
@@ -76,7 +82,7 @@ public abstract class GoalInput extends JPanel
         }
         Goal goal = new Goal(
                 "draft",
-                skill + " Goal",
+                skill,
                 GoalType.SKILL,
                 skill,
                 levelInput,

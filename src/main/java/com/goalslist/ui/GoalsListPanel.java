@@ -33,7 +33,7 @@ public class GoalsListPanel extends PluginPanel
 		{
 			for (Goal goal : goals)
 			{
-				add(new GoalRowPanel(goal));
+				add(new GoalRowPanel(goal, plugin::removeGoalBridge));
 			}
 		}
 

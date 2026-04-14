@@ -1,5 +1,7 @@
 package com.goalslist.goals;
 
+import lombok.Setter;
+
 import java.util.Objects;
 
 public class Goal
@@ -9,7 +11,8 @@ public class Goal
 	private final GoalType type;
 	private final String targetKey;
 	private final int targetValue;
-	private int currentValue;
+	@Setter
+    private int currentValue;
 	private GoalStatus status;
 
 	public Goal(String id, String title, GoalType type, String targetKey, int targetValue)
@@ -58,12 +61,7 @@ public class Goal
 		return currentValue;
 	}
 
-	public void setCurrentValue(int currentValue)
-	{
-		this.currentValue = currentValue;
-	}
-
-	public GoalStatus getStatus()
+    public GoalStatus getStatus()
 	{
 		return status;
 	}
