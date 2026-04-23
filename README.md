@@ -5,4 +5,5 @@ RuneLite plugin skeleton for tracking player goals and marking them complete aut
 
 
 V1 will be focused on tracking skill goals only and completing them automatically.
+V1 completed , working on implementing Quest goals now.
 
