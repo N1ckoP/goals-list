@@ -3,7 +3,8 @@ package com.goalslist.ui;
 import com.goalslist.GoalsListPlugin;
 import com.goalslist.goals.Goal;
 import com.goalslist.goals.GoalType;
-import com.goalslist.ui.inputs.GoalInput;
+import com.goalslist.ui.inputs.SkillGoalInput;
+import com.goalslist.ui.inputs.QuestGoalInput;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -28,8 +29,13 @@ public class AddGoalPanel extends JPanel
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 
 		Goal draftGoal = new Goal("draft", "New Goal", GoalType.SKILL, "ATTACK", 1);
+		Goal draftGoalQuest = new Goal("draft", "New Goal", GoalType.QUEST);
 
-		add(new GoalInput(plugin, draftGoal, "Goal")
+		add(new SkillGoalInput(plugin, draftGoal, "Goal Skill")
+		{
+
+		}.onSubmit(plugin::addGoalBridge), constraints);
+		add(new QuestGoalInput(plugin, draftGoalQuest, "Goal Quest")
 		{
 
 		}.onSubmit(plugin::addGoalBridge), constraints);

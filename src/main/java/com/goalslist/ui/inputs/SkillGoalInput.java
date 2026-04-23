@@ -17,7 +17,7 @@ import lombok.Getter;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.ColorScheme;
 
-public abstract class GoalInput extends JPanel
+public abstract class SkillGoalInput extends JPanel
 {
     protected final GoalsListPlugin plugin;
     private final Goal goal;
@@ -27,7 +27,7 @@ public abstract class GoalInput extends JPanel
     @Getter
     private final JPanel inputRow;
 
-    protected GoalInput(GoalsListPlugin plugin, Goal goal, String title)
+    protected SkillGoalInput(GoalsListPlugin plugin, Goal goal, String title)
     {
         super(new GridBagLayout());
         this.plugin = plugin;
@@ -59,7 +59,7 @@ public abstract class GoalInput extends JPanel
         add(inputRow);
     }
 
-    public GoalInput onSubmit(Consumer<Goal> listener)
+    public SkillGoalInput onSubmit(Consumer<Goal> listener)
     {
         this.submitListener = listener;
         return this;
@@ -99,7 +99,7 @@ public abstract class GoalInput extends JPanel
         return true;
     }
 
-    private static final class LevelDocumentFilter extends DocumentFilter
+    static final class LevelDocumentFilter extends DocumentFilter
     {
         @Override
         public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException

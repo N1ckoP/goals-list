@@ -9,8 +9,8 @@ public class Goal
 	private final String id;
 	private final String title;
 	private final GoalType type;
-	private final String targetKey;
-	private final int targetValue;
+	private String targetKey;
+	private int targetValue;
 	@Setter
     private int currentValue;
 	private GoalStatus status;
@@ -29,6 +29,20 @@ public class Goal
 		this.targetValue = targetValue;
 		this.currentValue = currentValue;
 		this.status = Objects.requireNonNull(status, "status");
+	}
+	public Goal(String id, String title, GoalType type, GoalStatus status)
+	{
+		this.id = Objects.requireNonNull(id, "id");
+		this.title = Objects.requireNonNull(title, "title");
+		this.type = Objects.requireNonNull(type, "type");
+		this.status = Objects.requireNonNull(status, "status");
+	}
+	public Goal(String id, String title, GoalType type)
+	{
+		this.id = Objects.requireNonNull(id, "id");
+		this.title = Objects.requireNonNull(title, "title");
+		this.type = Objects.requireNonNull(type, "type");
+		this.status = GoalStatus.ACTIVE;
 	}
 
 	public String getId()
