@@ -52,7 +52,7 @@ public final class TextButton extends JLabel
         addMouseListener(new MouseAdapter()
         {
             @Override
-            public void mousePressed(MouseEvent e)
+            public void mouseClicked(MouseEvent e)
             {
                 clickListener.accept(e);
             }

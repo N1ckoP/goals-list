@@ -5,6 +5,7 @@ import com.google.inject.Provides;
 import com.goalslist.events.GoalCompletedNotifier;
 import com.goalslist.goals.GoalEvaluator;
 import com.goalslist.goals.GoalTracker;
+import com.goalslist.goals.GoalType;
 import com.goalslist.storage.GoalRepository;
 import com.goalslist.ui.GoalsListPanel;
 import java.awt.BasicStroke;
@@ -17,9 +18,11 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Quest;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
@@ -46,6 +49,9 @@ public class GoalsListPlugin extends Plugin
 	@Inject
 	private ClientToolbar clientToolbar;
 
+	@Inject
+	private ClientThread clientThread;
+
 	private GoalTracker goalTracker;
 	private GoalsListPanel goalsListPanel;
 	private NavigationButton navigationButton;
@@ -56,11 +62,13 @@ public class GoalsListPlugin extends Plugin
 		goalTracker = new GoalTracker(
 			new GoalEvaluator(),
 			new GoalRepository(config,configManager),
-			new GoalCompletedNotifier(client, config)
+			new GoalCompletedNotifier(client, config),
+				client
 		);
 		goalsListPanel = new GoalsListPanel(this);
 		goalTracker.loadGoals();
 		goalsListPanel.refreshGoals(goalTracker.getGoals());
+		scheduleQuestRefresh();
 
 		navigationButton = NavigationButton.builder()
 			.tooltip("Goals List")
@@ -97,6 +105,7 @@ public class GoalsListPlugin extends Plugin
 		{
 			goalTracker.loadGoals();
 			goalsListPanel.refreshGoals(goalTracker.getGoals());
+			scheduleQuestRefresh();
 			log.debug("Reloaded goal definitions after login");
 		}
 	}
@@ -140,11 +149,44 @@ public class GoalsListPlugin extends Plugin
 	public void addGoalBridge(Goal goal)
 	{
 		goalTracker.addGoal(goal);
+		if (goal.getType() == GoalType.QUEST && client.getGameState() == GameState.LOGGED_IN)
+		{
+			scheduleQuestRefresh();
+		}
 		goalsListPanel.refreshGoals(goalTracker.getGoals());
 	}
 	public void  removeGoalBridge(Goal goal)
 	{
 		goalTracker.removeGoal(goal);
 		goalsListPanel.refreshGoals(goalTracker.getGoals());
+	}
+
+	private void scheduleQuestRefresh()
+	{
+		clientThread.invokeLater(() ->
+		{
+			refreshQuestGoals();
+			goalsListPanel.refreshGoals(goalTracker.getGoals());
+		});
+	}
+
+	private void refreshQuestGoals()
+	{
+		for (Goal goal : goalTracker.getGoals())
+		{
+			if (goal.getType() != GoalType.QUEST)
+			{
+				continue;
+			}
+
+			try
+			{
+				goalTracker.updateQuestGoals(Quest.valueOf(goal.getTargetKey()));
+			}
+			catch (IllegalArgumentException ex)
+			{
+				log.debug("Skipping invalid quest goal target {}", goal.getTargetKey(), ex);
+			}
+		}
 	}
 }

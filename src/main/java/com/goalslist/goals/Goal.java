@@ -30,19 +30,28 @@ public class Goal
 		this.currentValue = currentValue;
 		this.status = Objects.requireNonNull(status, "status");
 	}
+
+	public Goal(String id, String title, GoalType type, String targetKey, GoalStatus status)
+	{
+		this(
+			id,
+			title,
+			requireQuestType(type),
+			Objects.requireNonNull(targetKey, "targetKey"),
+			1,
+			status == GoalStatus.COMPLETED ? 1 : 0,
+			status
+		);
+	}
+
 	public Goal(String id, String title, GoalType type, GoalStatus status)
 	{
-		this.id = Objects.requireNonNull(id, "id");
-		this.title = Objects.requireNonNull(title, "title");
-		this.type = Objects.requireNonNull(type, "type");
-		this.status = Objects.requireNonNull(status, "status");
+		this(id, title, type, title, status);
 	}
+
 	public Goal(String id, String title, GoalType type)
 	{
-		this.id = Objects.requireNonNull(id, "id");
-		this.title = Objects.requireNonNull(title, "title");
-		this.type = Objects.requireNonNull(type, "type");
-		this.status = GoalStatus.ACTIVE;
+		this(id, title, type, title, GoalStatus.ACTIVE);
 	}
 
 	public String getId()
@@ -83,6 +92,16 @@ public class Goal
 	public void setStatus(GoalStatus status)
 	{
 		this.status = Objects.requireNonNull(status, "status");
+	}
+
+	private static GoalType requireQuestType(GoalType type)
+	{
+		GoalType resolvedType = Objects.requireNonNull(type, "type");
+		if (resolvedType != GoalType.QUEST)
+		{
+			throw new IllegalArgumentException("This constructor is only for quest goals");
+		}
+		return resolvedType;
 	}
 
 	@Override

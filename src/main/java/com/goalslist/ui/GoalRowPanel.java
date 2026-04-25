@@ -2,6 +2,7 @@ package com.goalslist.ui;
 
 import com.goalslist.goals.Goal;
 import com.goalslist.goals.GoalStatus;
+import com.goalslist.goals.GoalType;
 import com.goalslist.ui.components.TextButton;
 import java.awt.*;
 import java.util.function.Consumer;
@@ -23,7 +24,10 @@ public class GoalRowPanel extends JPanel
 		setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
 		setAlignmentX(Component.LEFT_ALIGNMENT);
 		JLabel goalLabel = new JLabel(goal.getTitle());
-		JLabel descriptionLabel = new JLabel(goal.getCurrentValue() + " / " + goal.getTargetValue());
+		String description = goal.getType() == GoalType.QUEST
+			? (goal.getStatus() == GoalStatus.COMPLETED ? "Completed" : "Active")
+			: goal.getCurrentValue() + " / " + goal.getTargetValue();
+		JLabel descriptionLabel = new JLabel(description);
 		if (goal.getStatus() == GoalStatus.COMPLETED)
 		{
 			descriptionLabel.setForeground(Color.GREEN);

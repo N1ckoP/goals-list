@@ -9,46 +9,64 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import javax.swing.*;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
+import javax.swing.border.EmptyBorder;
 import lombok.Getter;
 import net.runelite.api.Quest;
-import net.runelite.api.Skill;
 import net.runelite.client.ui.ColorScheme;
 public abstract class QuestGoalInput extends JPanel
 {
     protected final GoalsListPlugin plugin;
     private final Goal goal;
-    protected final JComboBox<String> skillDropdown;
+    protected final JComboBox<String> questDropdown;
     protected Consumer<Goal> submitListener;
     @Getter
     private final JPanel inputRow;
-    protected QuestGoalInput(GoalsListPlugin plugin, Goal goal, String title) {
-
-    super(new GridBagLayout());
+    protected QuestGoalInput(GoalsListPlugin plugin, Goal goal, String title)
+    {
+        super(new BorderLayout(0, 6));
         this.plugin = plugin;
         this.goal = goal;
-        inputRow = new JPanel(new BorderLayout());
+        setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        setBorder(new EmptyBorder(8, 8, 8, 8));
+        setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setForeground(Color.WHITE);
+        add(titleLabel, BorderLayout.NORTH);
+
+        inputRow = new JPanel(new GridBagLayout());
         inputRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
-    JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
-        fieldsPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-
-    skillDropdown = new JComboBox<>(Arrays.stream(Quest.values())
-        .map(Enum::name)
+        questDropdown = new JComboBox<>(Arrays.stream(Quest.values())
+            .map(Enum::name)
             .toArray(String[]::new));
-        fieldsPanel.add(skillDropdown);
+        questDropdown.setSelectedItem(goal.getTargetKey());
+        questDropdown.setPrototypeDisplayValue("A_TAIL_OF_TWO_CATS");
 
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 0;
+        constraints.insets = new Insets(0, 0, 0, 6);
+        constraints.anchor = GridBagConstraints.WEST;
+        constraints.gridx = 0;
+        constraints.weightx = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        inputRow.add(questDropdown, constraints);
 
-        inputRow.add(fieldsPanel, BorderLayout.CENTER);
-        if (showAddButton()) {
+        if (showAddButton())
+        {
             TextButton addButton = new TextButton("Add");
             addButton.onClick(e -> submit());
-            inputRow.add(addButton, BorderLayout.EAST);
+            constraints.gridx = 1;
+            constraints.weightx = 0;
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.insets = new Insets(0, 0, 0, 0);
+            inputRow.add(addButton, constraints);
         }
 
-        add(inputRow);
+        add(inputRow, BorderLayout.CENTER);
+
+        Dimension preferredSize = getPreferredSize();
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, preferredSize.height));
     }
     protected boolean showAddButton()
     {
@@ -56,15 +74,15 @@ public abstract class QuestGoalInput extends JPanel
     }
     protected void submit()
     {
-        String quest = (String) skillDropdown.getSelectedItem();
+        String quest = (String) questDropdown.getSelectedItem();
         GoalStatus status = GoalStatus.ACTIVE;
-       /* if(levelInput <= currentLevel) {
-            status = GoalStatus.COMPLETED;
-        }*/
         Goal goal = new Goal(
                 "draft",
                 quest,
                 GoalType.QUEST,
+                quest,
+                1,
+                0,
                 status
         );
         if (submitListener != null) {

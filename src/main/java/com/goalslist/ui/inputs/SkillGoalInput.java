@@ -9,6 +9,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -29,34 +30,57 @@ public abstract class SkillGoalInput extends JPanel
 
     protected SkillGoalInput(GoalsListPlugin plugin, Goal goal, String title)
     {
-        super(new GridBagLayout());
+        super(new BorderLayout(0, 6));
         this.plugin = plugin;
         this.goal = goal;
-        inputRow = new JPanel(new BorderLayout());
-        inputRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        setBorder(new EmptyBorder(8, 8, 8, 8));
+        setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JPanel fieldsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 4));
-        fieldsPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setForeground(Color.WHITE);
+        add(titleLabel, BorderLayout.NORTH);
+
+        inputRow = new JPanel(new GridBagLayout());
+        inputRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
         skillDropdown = new JComboBox<>(Arrays.stream(Skill.values())
             .map(Enum::name)
             .toArray(String[]::new));
         skillDropdown.setSelectedItem(goal.getTargetKey());
-        fieldsPanel.add(skillDropdown);
+        skillDropdown.setPrototypeDisplayValue("WOODCUTTING");
 
         targetValueField = new JTextField(String.valueOf(goal.getTargetValue()), 3);
         ((AbstractDocument) targetValueField.getDocument()).setDocumentFilter(new LevelDocumentFilter());
-        fieldsPanel.add(targetValueField);
+        targetValueField.setHorizontalAlignment(JTextField.CENTER);
 
-        inputRow.add(fieldsPanel, BorderLayout.CENTER);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 0;
+        constraints.insets = new Insets(0, 0, 0, 6);
+        constraints.anchor = GridBagConstraints.WEST;
+
+        constraints.gridx = 0;
+        constraints.weightx = 1;
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        inputRow.add(skillDropdown, constraints);
+
+        constraints.gridx = 1;
+        constraints.weightx = 0;
+        constraints.fill = GridBagConstraints.NONE;
+        inputRow.add(targetValueField, constraints);
 
         if (showAddButton()) {
             TextButton addButton = new TextButton("Add");
             addButton.onClick(e -> submit());
-            inputRow.add(addButton, BorderLayout.EAST);
+            constraints.gridx = 2;
+            constraints.insets = new Insets(0, 0, 0, 0);
+            inputRow.add(addButton, constraints);
         }
 
-        add(inputRow);
+        add(inputRow, BorderLayout.CENTER);
+
+        Dimension preferredSize = getPreferredSize();
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, preferredSize.height));
     }
 
     public SkillGoalInput onSubmit(Consumer<Goal> listener)
