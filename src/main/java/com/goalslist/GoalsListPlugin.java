@@ -149,10 +149,7 @@ public class GoalsListPlugin extends Plugin
 	public void addGoalBridge(Goal goal)
 	{
 		goalTracker.addGoal(goal);
-		if (goal.getType() == GoalType.QUEST && client.getGameState() == GameState.LOGGED_IN)
-		{
 			scheduleQuestRefresh();
-		}
 		goalsListPanel.refreshGoals(goalTracker.getGoals());
 	}
 	public void  removeGoalBridge(Goal goal)
@@ -174,18 +171,21 @@ public class GoalsListPlugin extends Plugin
 	{
 		for (Goal goal : goalTracker.getGoals())
 		{
-			if (goal.getType() != GoalType.QUEST)
-			{
-				continue;
-			}
-
 			try
 			{
-				goalTracker.updateQuestGoals(Quest.valueOf(goal.getTargetKey()));
+				if (goal.getType() == GoalType.SKILL)
+				{
+					Skill skill = Skill.valueOf(goal.getTargetKey());
+					goalTracker.updateSkillGoals(skill, client.getRealSkillLevel(skill));
+				}
+				else if (goal.getType() == GoalType.QUEST)
+				{
+					goalTracker.updateQuestGoals(Quest.valueOf(goal.getTargetKey()));
+				}
 			}
 			catch (IllegalArgumentException ex)
 			{
-				log.debug("Skipping invalid quest goal target {}", goal.getTargetKey(), ex);
+				log.debug("Skipping invalid {} goal target {}", goal.getType(), goal.getTargetKey(), ex);
 			}
 		}
 	}

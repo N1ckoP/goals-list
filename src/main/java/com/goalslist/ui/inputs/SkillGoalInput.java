@@ -101,9 +101,6 @@ public abstract class SkillGoalInput extends JPanel
         int levelInput = Integer.parseInt(levelText);
         int currentLevel = plugin.getClient().getRealSkillLevel(Skill.valueOf(skill));
         GoalStatus status = GoalStatus.ACTIVE;
-        if(levelInput <= currentLevel) {
-            status = GoalStatus.COMPLETED;
-        }
         Goal goal = new Goal(
                 "draft",
                 skill,
